@@ -12,22 +12,39 @@
 */
 
 use App\Task;
+use App\Post;
 use Illuminate\Http\Request;
 
-Route::group(['middleware' => ['web']], function () {
-    /**
-     * Show Task Dashboard
-     */
+
+Route::group(['middleware' => ['web']], function(){
+   /* Route::get('/Posts', function(){
+        $mongo = DB::connection('mongodb');
+        $data = $mongo->table('post')->take(1)->get();
+        return $data;
+    });
+
+    Route::get('/Posts', function(){
+        $mongo = DB::connection('mongodb');
+        $data = $mongo->table('post')->take(1)->get();
+        return $data;
+    });*/
+
+    Route::get('/test', function(){
+        $mongo = DB::connection('mongodb');
+        $data = $mongo->table('post')->get();
+        return $data;
+    });
+
     Route::get('/', function () {
-        return view('tasks', [
-            'tasks' => Task::orderBy('created_at', 'asc')->get()
+        return view('posts', [
+            'posts' => Post::all()
         ]);
     });
 
     /**
-     * Add New Task
+     * Add New post
      */
-    Route::post('/task', function (Request $request) {
+    Route::post('/post', function (Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
         ]);
@@ -38,19 +55,66 @@ Route::group(['middleware' => ['web']], function () {
                 ->withErrors($validator);
         }
 
-        $task = new Task;
-        $task->name = $request->name;
-        $task->save();
+        $post = new Post;
+        $post->title = $request->name;
+        $post->save();
 
         return redirect('/');
     });
 
     /**
-     * Delete Task
+     * Delete Post
      */
-    Route::delete('/task/{id}', function ($id) {
-        Task::findOrFail($id)->delete();
+    Route::delete('/post/{title}', function ($title) {
+        Post::where('title', $title)->delete();
 
         return redirect('/');
     });
+
+
 });
+
+
+
+
+
+//Route::group(['middleware' => ['web']], function () {
+//    /**
+//     * Show Task Dashboard
+//     */
+//    Route::get('/', function () {
+//        return view('tasks', [
+//            'tasks' => Task::orderBy('created_at', 'asc')->get()
+//        ]);
+//    });
+//
+//    /**
+//     * Add New Task
+//     */
+//    Route::post('/task', function (Request $request) {
+//        $validator = Validator::make($request->all(), [
+//            'name' => 'required|max:255',
+//        ]);
+//
+//        if ($validator->fails()) {
+//            return redirect('/')
+//                ->withInput()
+//                ->withErrors($validator);
+//        }
+//
+//        $task = new Task;
+//        $task->name = $request->name;
+//        $task->save();
+//
+//        return redirect('/');
+//    });
+//
+//    /**
+//     * Delete Task
+//     */
+//    Route::delete('/task/{id}', function ($id) {
+//        Task::findOrFail($id)->delete();
+//
+//        return redirect('/');
+//    });
+//});
